@@ -1,0 +1,14 @@
+Redis: (no need for venv activation)
+
+PS C:\Users\Ulpan\Documents\Adv_django\Second-att\Mini-project-2\resume_analyzer> docker run -d -p 6379:6379 --name redis redis
+docker: Error response from daemon: Conflict. The container name "/redis" is already in use by container "c750ebfa3de0849f10b14cc4a6a5414f59347ff7254ccf49c10c270bb99d631d". You have to remove (or rename) that container to be able to reuse that name.
+See 'docker run --help'.
+PS C:\Users\Ulpan\Documents\Adv_django\Second-att\Mini-project-2\resume_analyzer> docker start redis
+redis
+
+Celery: (need venv activation  +inside resume_ai_platform)
+celery -A resume_ai worker -l info
+
+
+
+{"name": "Han Sohi", "email": "sohi@example.com", "skills": ["Python", "React"], "education": "BSc Computer Science", "experience": "3 years at XYZ Corp"}
