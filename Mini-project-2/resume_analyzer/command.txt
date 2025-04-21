@@ -7,7 +7,9 @@ PS C:\Users\Ulpan\Documents\Adv_django\Second-att\Mini-project-2\resume_analyzer
 redis
 
 Celery: (need venv activation  +inside resume_ai_platform)
-celery -A resume_ai worker -l info
+celery -A resume_ai_platform worker -l info
+
+celery -A resume_ai_platform worker --loglevel=info
 
 
 

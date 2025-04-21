@@ -14,7 +14,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import os
 
-
+from django.contrib.auth import get_user_model
 
 class ResumeUploadView(APIView):
     permission_classes = [IsAuthenticated]
@@ -28,6 +28,8 @@ class ResumeUploadView(APIView):
         return Response(serializer.errors, status=400)
 
 
+
+User = get_user_model()
 
 class ResumeSearchBySkillsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -44,9 +46,50 @@ class ResumeSearchBySkillsView(APIView):
 
         # MongoDB query
         query = {"skills": {"$all": skills}}
-        results = list(collection.find(query, {"_id": 0}))  # exclude _id for simplicity
+        mongo_results = list(collection.find(query))  # keep _id to match with ResumeUpload
 
-        return Response({"results": results})
+        combined_results = []
+        for resume in mongo_results:
+            parsed_data_id = str(resume.get("_id"))
+
+            try:
+                upload = ResumeUpload.objects.select_related("user").get(parsed_data_id=parsed_data_id)
+                user = upload.user
+
+                combined_results.append({
+                    "skills": resume.get("skills", []),
+                    "education": resume.get("education", []),
+                    "experience": resume.get("experience", []),
+                    "uploaded_at": upload.uploaded_at,
+                    "user": {
+                        "email": user.email,
+                        "name": user.name,
+                        "role": user.role,
+                    },
+                })
+            except ResumeUpload.DoesNotExist:
+                continue
+
+        return Response({"results": combined_results})
+
+# class ResumeSearchBySkillsView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request):
+#         skills = request.query_params.getlist('skill[]')
+#         if not skills:
+#             return Response({"error": "Please provide at least one skill as a query parameter."}, status=400)
+
+#         # Connect to MongoDB
+#         client = MongoClient(settings.MONGO_URI)
+#         db = client[settings.MONGO_DB_NAME]
+#         collection = db.resumes
+
+#         # MongoDB query
+#         query = {"skills": {"$all": skills}}
+#         results = list(collection.find(query, {"_id": 0}))  # exclude _id for simplicity
+
+#         return Response({"results": results})
 
 
 

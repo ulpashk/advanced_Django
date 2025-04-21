@@ -8,6 +8,7 @@ import UploadResume from './components/UploadResume';
 import SearchResumes from './components/SearchResumes';
 import { logoutUser } from './api/auth';
 import axios from 'axios';
+import Home from './components/Home';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -68,9 +69,10 @@ const App = () => {
             </>
           ) : (
             <>
+              <Route path="/home" element={<Home />} />
               <Route path="/upload" element={<UploadResume />} />
               <Route path="/search" element={<SearchResumes />} />
-              <Route path="*" element={<Navigate to="/upload" replace />} />
+              <Route path="*" element={<Navigate to="/home" replace />} />
             </>
           )}
         </Routes>
